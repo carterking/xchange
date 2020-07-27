@@ -5,7 +5,7 @@ class XchangeRates extends Component {
     constructor() {
         super()
         this.state = {
-            currentRates: {}
+            rates: {}
         }
     }
 
@@ -15,18 +15,22 @@ class XchangeRates extends Component {
             .then(
                 (result) => {
                      this.setState({
-                         currentRates: result.rates
+                         rates: result.rates
                      })
                 }
             )
     }
 
     render() {
-         console.log(this.state.currentRates)
+         const currencies = Object.keys(this.state.rates).map(key=>({key, value: this.state.rates[key]}))
+         const currencyItems = currencies.map(item => <option key={item.key} value={item.value} >{item.key}</option>  )
         return (
-            <div>
-                Canadian Dollar: {this.state.currentRates.CAD}
-            </div>
+              <div className="oooo">
+              <select>
+                {currencyItems}
+              </select>
+                
+              </div>
         )
     }
 
