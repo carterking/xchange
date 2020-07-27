@@ -1,5 +1,4 @@
 import React, {Component} from "react"
-import RateItem from './RateItem'
 //import { super } from "@babel/types";
 
 class XchangeRates extends Component {
@@ -24,12 +23,9 @@ class XchangeRates extends Component {
 
     render() {
          console.log(this.state.currentRates)
-        // const rateItems = this.state.currentRates.map(item => 
-        //     <RateItem rate={item} />
-        //     )
         return (
             <div>
-                hi
+                Canadian Dollar: {this.state.currentRates.CAD}
             </div>
         )
     }
