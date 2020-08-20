@@ -6,17 +6,29 @@ class XchangeRates extends Component {
         super()
         this.state = {
             rates: {},
-            selectedCurrency: ''
+            convertTo: 'CAD',
+            convertFrom: 'CAD',
+            convertNumber: 1,
+            fetchUrl: "https://api.exchangeratesapi.io/latest?base="
         }
         this.handleChange = this.handleChange.bind(this)
     }
 
     handleChange(event) {
-        console.log(event.target.options[event.target.selectedIndex].text)
+        const {type, options, selectedIndex, value, id} = event.target
+        type === "select-one" ? 
+            this.setState({
+                [id]: options[selectedIndex].text
+            })
+        :
+        this.setState({
+            convertNumber: event.target.value
+        })
+        
     }
 
     componentDidMount() {
-        fetch("https://api.exchangeratesapi.io/latest?base=USD")
+        fetch(this.state.fetchUrl + this.state.convertFrom)
             .then(res => res.json())
             .then(
                 (result) => {
@@ -25,21 +37,43 @@ class XchangeRates extends Component {
                      })
                 }
             )
+
+    }
+
+    componentDidUpdate(prevState) {
+        if (this.state.convertFrom !== prevState.convertFrom) {
+            fetch(this.state.fetchUrl + this.state.convertFrom)
+            .then(res => res.json())
+            .then(
+                (result) => {
+                     this.setState({
+                         rates: result.rates
+                     })
+                }
+            )
+        }
     }
 
     render() {
          const currencies = Object.keys(this.state.rates).map(key=>({key, value: this.state.rates[key]}))
          const currencyItems = currencies.map(item => <option key={item.key} value={item.value} >{item.key}</option>  )
+         const convertedNumber = this.state.convertNumber * this.state.rates[this.state.convertTo]
         return (
-              <div className="oooo">
-                <select onChange={this.handleChange}>
-                    {currencyItems}
-                </select>
+            <div>
+                <label>
+                    Convert From
+                    <select id="convertFrom" onChange={this.handleChange}>{currencyItems}</select>
+                </label>
                 <br></br>
-                <label for="dollars">Convert</label>
-                <input type="number" id="dollars" value="1"></input>
-                <p>1 USD = {this.state.rates.CAD}CAD</p>
-              </div>
+                <label>
+                    Convert to
+                    <select id="convertTo" onChange={this.handleChange}>{currencyItems}</select>
+                </label>
+                <br></br>
+                <label htmlFor="dollars">Convert</label>
+                <input type="number" id="dollars" value={this.state.convertNumber} onChange={this.handleChange}></input>
+                <p>{this.state.convertNumber} {this.state.convertFrom} = {convertedNumber} {this.state.convertTo}</p>
+            </div>
         )
     }
 
